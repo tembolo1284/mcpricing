@@ -6,7 +6,8 @@
 #  A production-grade Monte Carlo options pricing library in pure C.
 #
 #  Usage:
-#    make                Build release libraries
+#    make                Build release libraries (GCC)
+#    make CC=clang       Build with Clang
 #    make BUILD=debug    Build with debug symbols and sanitizers
 #    make run-tests      Build and run all 140 tests
 #    make install        Install to system (default: /usr/local)
@@ -21,7 +22,7 @@
 # Configuration
 #------------------------------------------------------------------------------
 
-CC        := gcc
+CC        ?= gcc
 AR        := ar
 INSTALL   := install
 
@@ -44,22 +45,77 @@ BUILD_DIR := build
 OBJ_DIR   := $(BUILD_DIR)/obj
 
 #------------------------------------------------------------------------------
-# Compiler Flags
+# Compiler Detection & Flags
 #------------------------------------------------------------------------------
 
-CFLAGS_BASE := -std=c11 -Wall -Wextra -Wpedantic -Wno-unused-function
-CFLAGS_BASE += -fPIC -fvisibility=hidden
+# Detect compiler type
+COMPILER_VERSION := $(shell $(CC) --version 2>&1)
+IS_CLANG := $(findstring clang,$(COMPILER_VERSION))
 
+# Base flags (both compilers)
+CFLAGS_BASE := -std=c11 -fPIC -fvisibility=hidden
+
+# Strict warnings (common to both)
+CFLAGS_WARN := -Wall -Wextra -Wpedantic \
+               -Wshadow -Wcast-align -Wcast-qual \
+               -Wstrict-prototypes -Wmissing-prototypes \
+               -Wold-style-definition -Wredundant-decls \
+               -Wnested-externs -Wwrite-strings \
+               -Wdouble-promotion -Wundef \
+               -Wconversion -Wsign-conversion \
+               -Wformat=2 -Wformat-security \
+               -Wnull-dereference -Winit-self \
+               -Wuninitialized -Wswitch-enum \
+               -Wfloat-equal -Wpointer-arith
+
+# GCC-specific warnings
+CFLAGS_GCC := -Wlogical-op -Wduplicated-cond -Wduplicated-branches \
+              -Wrestrict -Wjump-misses-init \
+              -Wstringop-overflow=4
+
+# Clang-specific warnings
+CFLAGS_CLANG := -Weverything \
+                -Wno-padded -Wno-packed \
+                -Wno-disabled-macro-expansion \
+                -Wno-covered-switch-default \
+                -Wno-declaration-after-statement \
+                -Wno-used-but-marked-unused \
+                -Wno-unsafe-buffer-usage \
+                -Wno-switch-default
+
+# Apply compiler-specific flags
+ifdef IS_CLANG
+    CFLAGS_COMPILER := $(CFLAGS_CLANG)
+    COMPILER_NAME := Clang
+else
+    CFLAGS_COMPILER := $(CFLAGS_GCC)
+    COMPILER_NAME := GCC
+endif
+
+# Disabled warnings (code style choices, not bugs)
+CFLAGS_DISABLED := -Wno-unused-function -Wno-unused-parameter
+
+# Release vs Debug
 CFLAGS_RELEASE := -O3 -DNDEBUG -march=native -flto
-CFLAGS_DEBUG   := -g3 -O0 -DDEBUG -fsanitize=address,undefined -fno-omit-frame-pointer
+CFLAGS_DEBUG   := -g3 -O0 -DDEBUG -fno-omit-frame-pointer
+
+# Sanitizers (debug mode)
+ifdef IS_CLANG
+    SANITIZERS := -fsanitize=address,undefined,integer
+else
+    SANITIZERS := -fsanitize=address,undefined
+endif
 
 ifeq ($(BUILD),debug)
-    CFLAGS := $(CFLAGS_BASE) $(CFLAGS_DEBUG)
-    LDFLAGS_EXTRA := -fsanitize=address,undefined
+    CFLAGS_BUILD := $(CFLAGS_DEBUG) $(SANITIZERS)
+    LDFLAGS_EXTRA := $(SANITIZERS)
 else
-    CFLAGS := $(CFLAGS_BASE) $(CFLAGS_RELEASE)
+    CFLAGS_BUILD := $(CFLAGS_RELEASE)
     LDFLAGS_EXTRA := -flto
 endif
+
+# Combine all flags
+CFLAGS := $(CFLAGS_BASE) $(CFLAGS_WARN) $(CFLAGS_COMPILER) $(CFLAGS_DISABLED) $(CFLAGS_BUILD)
 
 LDFLAGS := -lm -lpthread $(LDFLAGS_EXTRA)
 INCLUDES := -I$(INC_DIR)
@@ -256,7 +312,7 @@ info:
 	@echo ""
 	@echo "mcoptions $(VERSION)"
 	@echo ""
-	@echo "  Compiler:     $(CC)"
+	@echo "  Compiler:     $(CC) ($(COMPILER_NAME))"
 	@echo "  Build:        $(BUILD)"
 	@echo "  Prefix:       $(PREFIX)"
 	@echo "  Sources:      $(words $(SRCS)) files"
@@ -283,7 +339,8 @@ help:
 	@echo "               Antithetic, Control Variates, Multithreading"
 	@echo ""
 	@echo "Usage:"
-	@echo "  make                  Build optimized libraries"
+	@echo "  make                  Build optimized libraries (GCC)"
+	@echo "  make CC=clang         Build with Clang"
 	@echo "  make BUILD=debug      Build with sanitizers"
 	@echo "  make run-tests        Run all 140 tests"
 	@echo "  make install          Install to $(PREFIX)"
@@ -291,6 +348,7 @@ help:
 	@echo "  make info             Show configuration"
 	@echo ""
 	@echo "Options:"
+	@echo "  CC=gcc|clang          Compiler (default: gcc)"
 	@echo "  BUILD=debug|release   Build mode (default: release)"
 	@echo "  PREFIX=/path          Install prefix (default: /usr/local)"
 	@echo ""
