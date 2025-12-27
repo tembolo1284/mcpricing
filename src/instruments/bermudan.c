@@ -85,7 +85,7 @@ double mco_price_bermudan(mco_ctx *ctx,
         double t_frac = exercise_times[i];
         if (t_frac > 1.0) t_frac = 1.0;
         if (t_frac < 0.0) t_frac = 0.0;
-        ex_steps[i] = (size_t)(t_frac * sim_steps + 0.5);
+        ex_steps[i] = (size_t)(t_frac * (double)sim_steps + 0.5);
         if (ex_steps[i] > sim_steps) ex_steps[i] = sim_steps;
     }
 
@@ -127,7 +127,7 @@ double mco_price_bermudan(mco_ctx *ctx,
         /* Find ITM paths */
         size_t n_itm = 0;
         for (uint64_t i = 0; i < n_paths; ++i) {
-            double s_t = spot_at_ex[i * num_exercise + ex_idx];
+            double s_t = spot_at_ex[i * num_exercise + (size_t)ex_idx];
             double ex_val = mco_payoff(s_t, strike, type);
 
             if (ex_val > 0.0) {
@@ -151,7 +151,7 @@ double mco_price_bermudan(mco_ctx *ctx,
         /* Exercise decision */
         for (size_t j = 0; j < n_itm; ++j) {
             uint64_t i = itm_indices[j];
-            double s_t = spot_at_ex[i * num_exercise + ex_idx];
+            double s_t = spot_at_ex[i * num_exercise + (size_t)ex_idx];
             double ex_val = mco_payoff(s_t, strike, type);
 
             double x = s_t / strike;

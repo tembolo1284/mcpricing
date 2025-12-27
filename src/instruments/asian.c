@@ -55,8 +55,7 @@ double mco_asian_geometric_closed(double spot,
                 / (adj_vol * sqrt_t);
     double d2 = d1 - adj_vol * sqrt_t;
 
-    /* Standard normal CDF */
-    extern double erfc(double);
+    /* Standard normal CDF using erfc from math.h */
     double nd1 = 0.5 * erfc(-d1 * 0.7071067811865475);
     double nd2 = 0.5 * erfc(-d2 * 0.7071067811865475);
 

@@ -93,7 +93,7 @@ double mco_price_european(mco_ctx *ctx,
     /* Multi-threaded path */
     if (ctx->num_threads > 1) {
         return mco_parallel_european(ctx, spot, strike, rate, volatility,
-                                     time_to_maturity, type);
+                                     time_to_maturity, (int)type);
     }
 
     /* Single-threaded path */

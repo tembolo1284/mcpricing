@@ -41,20 +41,20 @@ const char *mco_version_string(void)
         
         /* Major version */
         int major = MCO_VERSION_MAJOR;
-        if (major >= 10) *p++ = '0' + (major / 10);
-        *p++ = '0' + (major % 10);
+        if (major >= 10) *p++ = (char)('0' + (major / 10));
+        *p++ = (char)('0' + (major % 10));
         *p++ = '.';
         
         /* Minor version */
         int minor = MCO_VERSION_MINOR;
-        if (minor >= 10) *p++ = '0' + (minor / 10);
-        *p++ = '0' + (minor % 10);
+        if (minor >= 10) *p++ = (char)('0' + (minor / 10));
+        *p++ = (char)('0' + (minor % 10));
         *p++ = '.';
         
         /* Patch version */
         int patch = MCO_VERSION_PATCH;
-        if (patch >= 10) *p++ = '0' + (patch / 10);
-        *p++ = '0' + (patch % 10);
+        if (patch >= 10) *p++ = (char)('0' + (patch / 10));
+        *p++ = (char)('0' + (patch % 10));
         
         *p = '\0';
     }

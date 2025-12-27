@@ -116,7 +116,6 @@ double mco_lookback_floating_call(double spot, double rate, double vol, double t
     double vol_sqrt_t = vol * sqrt_t;
 
     double a1 = (rate / vol + 0.5 * vol) * sqrt_t;
-    double a2 = a1 - vol_sqrt_t;
 
     double df = exp(-rate * time);
 
@@ -127,17 +126,7 @@ double mco_lookback_floating_call(double spot, double rate, double vol, double t
 
     double vol_sq_over_2r = vol * vol / (2.0 * rate);
 
-    double term1 = spot * norm_cdf(a1);
-    double term2 = -spot * vol_sq_over_2r * norm_cdf(-a1);
-    double term3 = -spot * df * norm_cdf(a2);
-    double term4 = spot * df * vol_sq_over_2r * exp(2.0 * rate * time / (vol * vol) * a1 * vol / sqrt_t) * norm_cdf(-a1);
-
-    (void) term4;
-    (void) term3;
-    (void) term2;
-    (void) term1;
-
-    /* More accurate formula */
+    /* Use accurate formula */
     double mu = rate - 0.5 * vol * vol;
     double d1 = (mu * time + vol_sqrt_t * vol_sqrt_t) / vol_sqrt_t;
     double d2 = mu * time / vol_sqrt_t;

@@ -32,7 +32,7 @@ void mco_heston_char_func(double u,
                           double *re, double *im)
 {
     /* Use complex arithmetic */
-    double complex iu = I * u;
+    double complex iu = (double complex)I * u;
 
     /* d = √((ρσiu - κ)² + σ²(iu + u²)) */
     double complex a = rho * sigma * iu - kappa;

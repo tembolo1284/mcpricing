@@ -80,8 +80,9 @@ CFLAGS_CLANG := -Weverything \
                 -Wno-covered-switch-default \
                 -Wno-declaration-after-statement \
                 -Wno-used-but-marked-unused \
-                -Wno-unsafe-buffer-usage \
-                -Wno-switch-default
+                -Wno-switch-default \
+                -Wno-unused-macros \
+                -Wno-implicit-int-float-conversion
 
 # Apply compiler-specific flags
 ifdef IS_CLANG
@@ -93,7 +94,7 @@ else
 endif
 
 # Disabled warnings (code style choices, not bugs)
-CFLAGS_DISABLED := -Wno-unused-function -Wno-unused-parameter
+CFLAGS_DISABLED := -Wno-unused-function -Wno-unused-parameter -Wno-redundant-decls
 
 # Release vs Debug
 CFLAGS_RELEASE := -O3 -DNDEBUG -march=native -flto
