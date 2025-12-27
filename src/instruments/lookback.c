@@ -132,6 +132,11 @@ double mco_lookback_floating_call(double spot, double rate, double vol, double t
     double term3 = -spot * df * norm_cdf(a2);
     double term4 = spot * df * vol_sq_over_2r * exp(2.0 * rate * time / (vol * vol) * a1 * vol / sqrt_t) * norm_cdf(-a1);
 
+    (void) term4;
+    (void) term3;
+    (void) term2;
+    (void) term1;
+
     /* More accurate formula */
     double mu = rate - 0.5 * vol * vol;
     double d1 = (mu * time + vol_sqrt_t * vol_sqrt_t) / vol_sqrt_t;

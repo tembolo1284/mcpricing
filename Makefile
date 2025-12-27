@@ -164,10 +164,20 @@ $(LIB_STATIC): $(OBJS)
 # Object Files
 #------------------------------------------------------------------------------
 
+# Create all necessary subdirectories
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
 	@echo "  CC  $<"
 	@mkdir -p $(dir $@)
 	@$(CC) $(CFLAGS) $(INCLUDES) -DMCO_BUILD_SHARED -c $< -o $@
+
+# Ensure build directories exist
+$(OBJS): | $(OBJ_DIR)
+
+$(OBJ_DIR):
+	@mkdir -p $(OBJ_DIR)/models
+	@mkdir -p $(OBJ_DIR)/instruments
+	@mkdir -p $(OBJ_DIR)/methods
+	@mkdir -p $(OBJ_DIR)/variance_reduction
 
 #------------------------------------------------------------------------------
 # Tests

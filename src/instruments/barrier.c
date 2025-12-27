@@ -279,6 +279,7 @@ double mco_barrier_down_out_put(double spot, double strike, double barrier,
 double mco_barrier_down_in_put(double spot, double strike, double barrier,
                                 double rebate, double rate, double vol, double time)
 {
+    (void) rebate;
     if (spot <= barrier) {
         return mco_black_scholes_put(spot, strike, rate, vol, time);
     }
@@ -289,6 +290,8 @@ double mco_barrier_down_in_put(double spot, double strike, double barrier,
 
     double y1 = log(barrier / spot) / (vol * sqrt_t) + (1.0 + mu) * vol * sqrt_t;
     double y2 = log(barrier / spot) / (vol * sqrt_t) + mu * vol * sqrt_t;
+
+    (void) y2;
 
     return -spot * pow_term * norm_cdf(-y1) + strike * exp(-rate * time) * pow_term * norm_cdf(-y1 + vol * sqrt_t);
 }
