@@ -182,6 +182,7 @@ static double barrier_B(double spot, double strike, double barrier, double rate,
     double sqrt_t = sqrt(time);
     double mu = (rate - 0.5 * vol * vol) / (vol * vol);
     double lambda = sqrt(mu * mu + 2.0 * rate / (vol * vol));
+    (void) lambda;
     double x1 = log(spot / barrier) / (vol * sqrt_t) + (1.0 + mu) * vol * sqrt_t;
     double y1 = log(barrier / spot) / (vol * sqrt_t) + (1.0 + mu) * vol * sqrt_t;
 
@@ -225,6 +226,7 @@ double mco_barrier_down_out_call(double spot, double strike, double barrier,
 double mco_barrier_down_in_call(double spot, double strike, double barrier,
                                  double rebate, double rate, double vol, double time)
 {
+    (void)rebate;
     if (spot <= barrier) {
         return mco_black_scholes_call(spot, strike, rate, vol, time);
     }
@@ -248,6 +250,7 @@ double mco_barrier_up_out_call(double spot, double strike, double barrier,
 double mco_barrier_up_in_call(double spot, double strike, double barrier,
                                double rebate, double rate, double vol, double time)
 {
+    (void) rebate;
     if (spot >= barrier) {
         return mco_black_scholes_call(spot, strike, rate, vol, time);
     }
@@ -265,6 +268,7 @@ double mco_barrier_up_in_call(double spot, double strike, double barrier,
 double mco_barrier_down_out_put(double spot, double strike, double barrier,
                                  double rebate, double rate, double vol, double time)
 {
+    (void) rebate;
     if (spot <= barrier) return rebate * exp(-rate * time);
 
     double vanilla = mco_black_scholes_put(spot, strike, rate, vol, time);
@@ -305,6 +309,7 @@ double mco_barrier_up_out_put(double spot, double strike, double barrier,
 double mco_barrier_up_in_put(double spot, double strike, double barrier,
                               double rebate, double rate, double vol, double time)
 {
+    (void) rebate;
     if (spot >= barrier) {
         return mco_black_scholes_put(spot, strike, rate, vol, time);
     }
