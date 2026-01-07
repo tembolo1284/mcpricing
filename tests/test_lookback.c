@@ -1,7 +1,6 @@
 /*
  * Lookback Options Tests
  */
-
 #include "unity/unity.h"
 #include "mcoptions.h"
 #include "internal/instruments/lookback.h"
@@ -9,7 +8,7 @@
 
 #define LOOKBACK_TOL 1.0
 
-void test_lookback_floating_call(void)
+static void test_lookback_floating_call(void)
 {
     mco_ctx *ctx = mco_ctx_new();
     mco_set_simulations(ctx, 50000);
@@ -24,7 +23,7 @@ void test_lookback_floating_call(void)
     mco_ctx_free(ctx);
 }
 
-void test_lookback_floating_put(void)
+static void test_lookback_floating_put(void)
 {
     mco_ctx *ctx = mco_ctx_new();
     mco_set_simulations(ctx, 50000);
@@ -39,7 +38,7 @@ void test_lookback_floating_put(void)
     mco_ctx_free(ctx);
 }
 
-void test_lookback_fixed_call(void)
+static void test_lookback_fixed_call(void)
 {
     mco_ctx *ctx = mco_ctx_new();
     mco_set_simulations(ctx, 50000);
@@ -54,7 +53,7 @@ void test_lookback_fixed_call(void)
     mco_ctx_free(ctx);
 }
 
-void test_lookback_fixed_put(void)
+static void test_lookback_fixed_put(void)
 {
     mco_ctx *ctx = mco_ctx_new();
     mco_set_simulations(ctx, 50000);
@@ -69,7 +68,7 @@ void test_lookback_fixed_put(void)
     mco_ctx_free(ctx);
 }
 
-void test_lookback_more_obs_higher_price(void)
+static void test_lookback_more_obs_higher_price(void)
 {
     mco_ctx *ctx = mco_ctx_new();
     mco_set_simulations(ctx, 30000);
@@ -87,7 +86,7 @@ void test_lookback_more_obs_higher_price(void)
     mco_ctx_free(ctx);
 }
 
-void test_lookback_reproducible(void)
+static void test_lookback_reproducible(void)
 {
     mco_ctx *ctx1 = mco_ctx_new();
     mco_ctx *ctx2 = mco_ctx_new();

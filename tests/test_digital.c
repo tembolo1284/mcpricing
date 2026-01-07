@@ -1,7 +1,6 @@
 /*
  * Digital (Binary) Options Tests
  */
-
 #include "unity/unity.h"
 #include "mcoptions.h"
 #include "internal/instruments/digital.h"
@@ -9,7 +8,7 @@
 
 #define DIGITAL_TOL 0.30
 
-void test_digital_cash_call_atm(void)
+static void test_digital_cash_call_atm(void)
 {
     /* ATM digital: ~50% chance of payout */
     double price = mco_digital_cash_call(100.0, 100.0, 1.0, 0.05, 0.20, 1.0);
@@ -18,23 +17,23 @@ void test_digital_cash_call_atm(void)
     TEST_ASSERT_DOUBLE_WITHIN(0.10, 0.476, price);
 }
 
-void test_digital_cash_put_atm(void)
+static void test_digital_cash_put_atm(void)
 {
     double price = mco_digital_cash_put(100.0, 100.0, 1.0, 0.05, 0.20, 1.0);
     TEST_ASSERT_DOUBLE_WITHIN(0.10, 0.476, price);
 }
 
-void test_digital_cash_parity(void)
+static void test_digital_cash_parity(void)
 {
     /* Cash call + Cash put = payout * discount */
     double call = mco_digital_cash_call(100.0, 100.0, 1.0, 0.05, 0.20, 1.0);
     double put = mco_digital_cash_put(100.0, 100.0, 1.0, 0.05, 0.20, 1.0);
-
     double parity = 1.0 * exp(-0.05);
+
     TEST_ASSERT_DOUBLE_WITHIN(0.01, parity, call + put);
 }
 
-void test_digital_asset_call_atm(void)
+static void test_digital_asset_call_atm(void)
 {
     double price = mco_digital_asset_call(100.0, 100.0, 0.05, 0.20, 1.0);
 
@@ -43,14 +42,15 @@ void test_digital_asset_call_atm(void)
     TEST_ASSERT_TRUE(price < 70.0);
 }
 
-void test_digital_asset_put_atm(void)
+static void test_digital_asset_put_atm(void)
 {
     double price = mco_digital_asset_put(100.0, 100.0, 0.05, 0.20, 1.0);
+
     TEST_ASSERT_TRUE(price > 30.0);
     TEST_ASSERT_TRUE(price < 60.0);
 }
 
-void test_digital_mc_vs_analytical(void)
+static void test_digital_mc_vs_analytical(void)
 {
     mco_ctx *ctx = mco_ctx_new();
     mco_set_simulations(ctx, 100000);
@@ -64,27 +64,27 @@ void test_digital_mc_vs_analytical(void)
     mco_ctx_free(ctx);
 }
 
-void test_digital_itm(void)
+static void test_digital_itm(void)
 {
     /* Deep ITM: should be significantly higher than ATM */
     double itm = mco_digital_cash_call(120.0, 100.0, 1.0, 0.05, 0.20, 1.0);
     double atm = mco_digital_cash_call(100.0, 100.0, 1.0, 0.05, 0.20, 1.0);
-    
+
     TEST_ASSERT_TRUE(itm > atm);
     TEST_ASSERT_TRUE(itm > 0.7);
 }
 
-void test_digital_otm(void)
+static void test_digital_otm(void)
 {
     /* Deep OTM: should be significantly lower than ATM */
     double otm = mco_digital_cash_call(80.0, 100.0, 1.0, 0.05, 0.20, 1.0);
     double atm = mco_digital_cash_call(100.0, 100.0, 1.0, 0.05, 0.20, 1.0);
-    
+
     TEST_ASSERT_TRUE(otm < atm);
     TEST_ASSERT_TRUE(otm < 0.25);
 }
 
-void test_digital_reproducible(void)
+static void test_digital_reproducible(void)
 {
     mco_ctx *ctx1 = mco_ctx_new();
     mco_ctx *ctx2 = mco_ctx_new();

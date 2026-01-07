@@ -7,7 +7,6 @@
  *   - CV reduces variance (tighter confidence interval)
  *   - Geometric Asian CV for arithmetic Asian
  */
-
 #include "unity/unity.h"
 #include "mcoptions.h"
 #include "internal/variance_reduction/control_variates.h"
@@ -19,8 +18,7 @@
 /*-------------------------------------------------------
  * European with Spot Control Variate
  *-------------------------------------------------------*/
-
-void test_european_cv_call_atm(void)
+static void test_european_cv_call_atm(void)
 {
     mco_ctx *ctx = mco_ctx_new();
     TEST_ASSERT_NOT_NULL(ctx);
@@ -32,12 +30,13 @@ void test_european_cv_call_atm(void)
 
     /* Should be close to Black-Scholes */
     double bs = mco_black_scholes_call(100.0, 100.0, 0.05, 0.20, 1.0);
+
     TEST_ASSERT_DOUBLE_WITHIN(CV_TOLERANCE, bs, price);
 
     mco_ctx_free(ctx);
 }
 
-void test_european_cv_put_atm(void)
+static void test_european_cv_put_atm(void)
 {
     mco_ctx *ctx = mco_ctx_new();
     TEST_ASSERT_NOT_NULL(ctx);
@@ -48,12 +47,13 @@ void test_european_cv_put_atm(void)
     double price = mco_european_put_cv(ctx, 100.0, 100.0, 0.05, 0.20, 1.0);
 
     double bs = mco_black_scholes_put(100.0, 100.0, 0.05, 0.20, 1.0);
+
     TEST_ASSERT_DOUBLE_WITHIN(CV_TOLERANCE, bs, price);
 
     mco_ctx_free(ctx);
 }
 
-void test_european_cv_reduces_variance(void)
+static void test_european_cv_reduces_variance(void)
 {
     /*
      * Compare variance of standard MC vs CV MC
@@ -67,10 +67,10 @@ void test_european_cv_reduces_variance(void)
 
     /* Run 10 batches with different seeds */
     for (int i = 0; i < 10; ++i) {
-        mco_set_seed(ctx, 100 + i);
+        mco_set_seed(ctx, (uint64_t)(100 + i));
         prices_std[i] = mco_european_call(ctx, 100.0, 100.0, 0.05, 0.20, 1.0);
 
-        mco_set_seed(ctx, 100 + i);
+        mco_set_seed(ctx, (uint64_t)(100 + i));
         prices_cv[i] = mco_european_call_cv(ctx, 100.0, 100.0, 0.05, 0.20, 1.0);
     }
 
@@ -99,8 +99,7 @@ void test_european_cv_reduces_variance(void)
 /*-------------------------------------------------------
  * Asian with Geometric Control Variate
  *-------------------------------------------------------*/
-
-void test_asian_cv_call_atm(void)
+static void test_asian_cv_call_atm(void)
 {
     mco_ctx *ctx = mco_ctx_new();
     TEST_ASSERT_NOT_NULL(ctx);
@@ -124,7 +123,7 @@ void test_asian_cv_call_atm(void)
     mco_ctx_free(ctx);
 }
 
-void test_asian_cv_put_atm(void)
+static void test_asian_cv_put_atm(void)
 {
     mco_ctx *ctx = mco_ctx_new();
     TEST_ASSERT_NOT_NULL(ctx);
@@ -140,12 +139,12 @@ void test_asian_cv_put_atm(void)
     mco_ctx_free(ctx);
 }
 
-void test_asian_cv_vs_geometric_closed(void)
+static void test_asian_cv_vs_geometric_closed(void)
 {
     /*
      * When using geometric CV, the adjusted estimate should be
      * close to the true arithmetic Asian price.
-     * 
+     *
      * We can't verify exactly, but we can check it's reasonable.
      */
     mco_ctx *ctx = mco_ctx_new();
@@ -163,7 +162,7 @@ void test_asian_cv_vs_geometric_closed(void)
     mco_ctx_free(ctx);
 }
 
-void test_asian_cv_reduces_variance(void)
+static void test_asian_cv_reduces_variance(void)
 {
     mco_ctx *ctx = mco_ctx_new();
     mco_set_simulations(ctx, 10000);
@@ -172,10 +171,10 @@ void test_asian_cv_reduces_variance(void)
     double prices_cv[10];
 
     for (int i = 0; i < 10; ++i) {
-        mco_set_seed(ctx, 200 + i);
+        mco_set_seed(ctx, (uint64_t)(200 + i));
         prices_std[i] = mco_asian_call(ctx, 100.0, 100.0, 0.05, 0.20, 1.0, 12);
 
-        mco_set_seed(ctx, 200 + i);
+        mco_set_seed(ctx, (uint64_t)(200 + i));
         prices_cv[i] = mco_asian_call_cv(ctx, 100.0, 100.0, 0.05, 0.20, 1.0, 12);
     }
 
@@ -203,8 +202,7 @@ void test_asian_cv_reduces_variance(void)
 /*-------------------------------------------------------
  * Reproducibility
  *-------------------------------------------------------*/
-
-void test_cv_reproducible(void)
+static void test_cv_reproducible(void)
 {
     mco_ctx *ctx1 = mco_ctx_new();
     mco_ctx *ctx2 = mco_ctx_new();
@@ -226,7 +224,6 @@ void test_cv_reproducible(void)
 /*-------------------------------------------------------
  * Test Runner
  *-------------------------------------------------------*/
-
 int main(void)
 {
     UnityBegin("test_control_variates.c");

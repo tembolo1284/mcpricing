@@ -8,7 +8,6 @@
  *   - Skew with negative correlation
  *   - Reproducibility
  */
-
 #include "unity/unity.h"
 #include "mcoptions.h"
 #include "internal/models/heston.h"
@@ -29,15 +28,14 @@
 /*-------------------------------------------------------
  * Feller Condition Tests
  *-------------------------------------------------------*/
-
-void test_heston_feller_satisfied(void)
+static void test_heston_feller_satisfied(void)
 {
     /* 2κθ > σ² : 2*2*0.04 = 0.16 > 0.09 = 0.3² ✓ */
     int ok = mco_heston_check_feller(TEST_KAPPA, TEST_THETA, TEST_SIGMA);
     TEST_ASSERT_TRUE(ok);
 }
 
-void test_heston_feller_violated(void)
+static void test_heston_feller_violated(void)
 {
     /* High vol-of-vol violates Feller */
     int ok = mco_heston_check_feller(2.0, 0.04, 1.0);  /* 0.16 < 1.0 */
@@ -47,8 +45,7 @@ void test_heston_feller_violated(void)
 /*-------------------------------------------------------
  * Basic Pricing Tests
  *-------------------------------------------------------*/
-
-void test_heston_call_atm(void)
+static void test_heston_call_atm(void)
 {
     mco_ctx *ctx = mco_ctx_new();
     TEST_ASSERT_NOT_NULL(ctx);
@@ -68,7 +65,7 @@ void test_heston_call_atm(void)
     mco_ctx_free(ctx);
 }
 
-void test_heston_put_atm(void)
+static void test_heston_put_atm(void)
 {
     mco_ctx *ctx = mco_ctx_new();
     TEST_ASSERT_NOT_NULL(ctx);
@@ -90,8 +87,7 @@ void test_heston_put_atm(void)
 /*-------------------------------------------------------
  * Skew Tests (Negative Correlation)
  *-------------------------------------------------------*/
-
-void test_heston_negative_skew(void)
+static void test_heston_negative_skew(void)
 {
     /*
      * With negative rho, OTM puts should have higher implied vol
@@ -101,8 +97,8 @@ void test_heston_negative_skew(void)
     mco_ctx *ctx = mco_ctx_new();
     mco_set_simulations(ctx, 30000);
     mco_set_steps(ctx, 100);
-    mco_set_seed(ctx, 42);
 
+    mco_set_seed(ctx, 42);
     /* OTM put (K=90) */
     double put_90 = mco_heston_european_put(ctx, 100.0, 90.0, 0.05, 1.0,
                                              TEST_V0, TEST_KAPPA, TEST_THETA,
@@ -125,8 +121,7 @@ void test_heston_negative_skew(void)
 /*-------------------------------------------------------
  * Parameter Sensitivity Tests
  *-------------------------------------------------------*/
-
-void test_heston_v0_sensitivity(void)
+static void test_heston_v0_sensitivity(void)
 {
     mco_ctx *ctx = mco_ctx_new();
     mco_set_simulations(ctx, 30000);
@@ -148,7 +143,7 @@ void test_heston_v0_sensitivity(void)
     mco_ctx_free(ctx);
 }
 
-void test_heston_kappa_sensitivity(void)
+static void test_heston_kappa_sensitivity(void)
 {
     mco_ctx *ctx = mco_ctx_new();
     mco_set_simulations(ctx, 30000);
@@ -175,8 +170,7 @@ void test_heston_kappa_sensitivity(void)
 /*-------------------------------------------------------
  * Reproducibility
  *-------------------------------------------------------*/
-
-void test_heston_reproducible(void)
+static void test_heston_reproducible(void)
 {
     mco_ctx *ctx1 = mco_ctx_new();
     mco_ctx *ctx2 = mco_ctx_new();
@@ -204,7 +198,6 @@ void test_heston_reproducible(void)
 /*-------------------------------------------------------
  * Test Runner
  *-------------------------------------------------------*/
-
 int main(void)
 {
     UnityBegin("test_heston.c");

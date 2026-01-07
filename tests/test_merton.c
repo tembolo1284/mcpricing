@@ -8,7 +8,6 @@
  *   - Jump effect on prices
  *   - Convergence to Black-Scholes as λ→0
  */
-
 #include "unity/unity.h"
 #include "mcoptions.h"
 #include "internal/models/merton_jump.h"
@@ -27,8 +26,7 @@
 /*-------------------------------------------------------
  * Analytical Formula Tests
  *-------------------------------------------------------*/
-
-void test_merton_call_atm(void)
+static void test_merton_call_atm(void)
 {
     double price = mco_merton_call(100.0, 100.0, 0.05, 1.0,
                                     TEST_SIGMA, TEST_LAMBDA,
@@ -40,7 +38,7 @@ void test_merton_call_atm(void)
     TEST_ASSERT_TRUE(price < 20.0);
 }
 
-void test_merton_put_atm(void)
+static void test_merton_put_atm(void)
 {
     double price = mco_merton_put(100.0, 100.0, 0.05, 1.0,
                                    TEST_SIGMA, TEST_LAMBDA,
@@ -51,7 +49,7 @@ void test_merton_put_atm(void)
     TEST_ASSERT_TRUE(price < 15.0);
 }
 
-void test_merton_put_call_parity(void)
+static void test_merton_put_call_parity(void)
 {
     double call = mco_merton_call(100.0, 105.0, 0.05, 1.0,
                                    TEST_SIGMA, TEST_LAMBDA,
@@ -70,14 +68,12 @@ void test_merton_put_call_parity(void)
 /*-------------------------------------------------------
  * Limit Tests
  *-------------------------------------------------------*/
-
-void test_merton_converges_to_bs(void)
+static void test_merton_converges_to_bs(void)
 {
     /* With λ = 0, Merton should equal Black-Scholes */
     double merton = mco_merton_call(100.0, 100.0, 0.05, 1.0,
                                      0.20, 0.0,   /* λ = 0 */
                                      -0.10, 0.15);
-
     double bs = mco_black_scholes_call(100.0, 100.0, 0.05, 0.20, 1.0);
 
     TEST_ASSERT_DOUBLE_WITHIN(0.01, bs, merton);
@@ -86,8 +82,7 @@ void test_merton_converges_to_bs(void)
 /*-------------------------------------------------------
  * Monte Carlo Tests
  *-------------------------------------------------------*/
-
-void test_merton_mc_call_atm(void)
+static void test_merton_mc_call_atm(void)
 {
     mco_ctx *ctx = mco_ctx_new();
     TEST_ASSERT_NOT_NULL(ctx);
@@ -110,7 +105,7 @@ void test_merton_mc_call_atm(void)
     mco_ctx_free(ctx);
 }
 
-void test_merton_mc_put_atm(void)
+static void test_merton_mc_put_atm(void)
 {
     mco_ctx *ctx = mco_ctx_new();
     TEST_ASSERT_NOT_NULL(ctx);
@@ -135,14 +130,12 @@ void test_merton_mc_put_atm(void)
 /*-------------------------------------------------------
  * Jump Parameter Sensitivity
  *-------------------------------------------------------*/
-
-void test_merton_lambda_sensitivity(void)
+static void test_merton_lambda_sensitivity(void)
 {
     /* More jumps = higher option value (more uncertainty) */
     double price_low = mco_merton_call(100.0, 100.0, 0.05, 1.0,
                                         0.20, 0.5,   /* λ = 0.5 */
                                         -0.10, 0.15);
-
     double price_high = mco_merton_call(100.0, 100.0, 0.05, 1.0,
                                          0.20, 3.0,   /* λ = 3.0 */
                                          -0.10, 0.15);
@@ -150,26 +143,25 @@ void test_merton_lambda_sensitivity(void)
     TEST_ASSERT_TRUE(price_high > price_low);
 }
 
-void test_merton_sigma_j_sensitivity(void)
+static void test_merton_sigma_j_sensitivity(void)
 {
     /* Higher jump volatility = higher option value */
     double price_low = mco_merton_call(100.0, 100.0, 0.05, 1.0,
                                         0.20, 1.0, -0.10, 0.05);  /* σⱼ = 5% */
-
     double price_high = mco_merton_call(100.0, 100.0, 0.05, 1.0,
                                          0.20, 1.0, -0.10, 0.30); /* σⱼ = 30% */
 
     TEST_ASSERT_TRUE(price_high > price_low);
 }
 
-void test_merton_jump_direction_affects_skew(void)
+static void test_merton_jump_direction_affects_skew(void)
 {
     /*
      * Test that jump direction affects the relative pricing of OTM puts vs calls.
      * With negative mean jumps: skew should be more negative (OTM puts more expensive relative to OTM calls)
      * With positive mean jumps: skew should be more positive
      */
-    
+
     /* ATM prices should be higher with larger absolute jump size */
     double call_no_jump = mco_merton_call(100.0, 100.0, 0.05, 1.0, 0.20, 0.0, 0.0, 0.15);
     double call_neg = mco_merton_call(100.0, 100.0, 0.05, 1.0, 0.20, 2.0, -0.15, 0.15);
@@ -178,7 +170,7 @@ void test_merton_jump_direction_affects_skew(void)
     /* Jumps add uncertainty, so both should be higher than no-jump case */
     TEST_ASSERT_TRUE(call_neg > call_no_jump - 0.1);
     TEST_ASSERT_TRUE(call_pos > call_no_jump - 0.1);
-    
+
     /* Positive jumps should make calls more valuable */
     TEST_ASSERT_TRUE(call_pos > call_neg);
 }
@@ -186,8 +178,7 @@ void test_merton_jump_direction_affects_skew(void)
 /*-------------------------------------------------------
  * Reproducibility
  *-------------------------------------------------------*/
-
-void test_merton_reproducible(void)
+static void test_merton_reproducible(void)
 {
     mco_ctx *ctx1 = mco_ctx_new();
     mco_ctx *ctx2 = mco_ctx_new();
@@ -215,7 +206,6 @@ void test_merton_reproducible(void)
 /*-------------------------------------------------------
  * Test Runner
  *-------------------------------------------------------*/
-
 int main(void)
 {
     UnityBegin("test_merton.c");
