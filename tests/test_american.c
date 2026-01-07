@@ -8,7 +8,6 @@
  *   - Convergence with increasing simulations
  *   - Edge cases
  */
-
 #include "unity/unity.h"
 #include "mcoptions.h"
 #include "internal/models/gbm.h"
@@ -32,8 +31,7 @@
 /*-------------------------------------------------------
  * Basic Pricing Tests
  *-------------------------------------------------------*/
-
-void test_american_put_atm(void)
+static void test_american_put_atm(void)
 {
     mco_ctx *ctx = mco_ctx_new();
     TEST_ASSERT_NOT_NULL(ctx);
@@ -42,13 +40,12 @@ void test_american_put_atm(void)
     mco_set_seed(ctx, 42);
 
     double price = mco_american_put(ctx, 100.0, 100.0, 0.05, 0.20, 1.0, 50);
-
     TEST_ASSERT_DOUBLE_WITHIN(LSM_TOLERANCE, AMERICAN_PUT_REF, price);
 
     mco_ctx_free(ctx);
 }
 
-void test_american_call_atm(void)
+static void test_american_call_atm(void)
 {
     mco_ctx *ctx = mco_ctx_new();
     TEST_ASSERT_NOT_NULL(ctx);
@@ -57,7 +54,6 @@ void test_american_call_atm(void)
     mco_set_seed(ctx, 42);
 
     double price = mco_american_call(ctx, 100.0, 100.0, 0.05, 0.20, 1.0, 50);
-
     /* American call ≈ European call for non-dividend stock */
     TEST_ASSERT_DOUBLE_WITHIN(LSM_TOLERANCE, AMERICAN_CALL_REF, price);
 
@@ -67,8 +63,7 @@ void test_american_call_atm(void)
 /*-------------------------------------------------------
  * Early Exercise Premium Tests
  *-------------------------------------------------------*/
-
-void test_american_put_exceeds_european(void)
+static void test_american_put_exceeds_european(void)
 {
     mco_ctx *ctx = mco_ctx_new();
     TEST_ASSERT_NOT_NULL(ctx);
@@ -87,7 +82,7 @@ void test_american_put_exceeds_european(void)
     mco_ctx_free(ctx);
 }
 
-void test_american_call_approx_european(void)
+static void test_american_call_approx_european(void)
 {
     mco_ctx *ctx = mco_ctx_new();
     TEST_ASSERT_NOT_NULL(ctx);
@@ -109,8 +104,7 @@ void test_american_call_approx_european(void)
 /*-------------------------------------------------------
  * ITM/OTM Tests
  *-------------------------------------------------------*/
-
-void test_american_put_itm(void)
+static void test_american_put_itm(void)
 {
     mco_ctx *ctx = mco_ctx_new();
     TEST_ASSERT_NOT_NULL(ctx);
@@ -129,7 +123,7 @@ void test_american_put_itm(void)
     mco_ctx_free(ctx);
 }
 
-void test_american_put_otm(void)
+static void test_american_put_otm(void)
 {
     mco_ctx *ctx = mco_ctx_new();
     TEST_ASSERT_NOT_NULL(ctx);
@@ -150,8 +144,7 @@ void test_american_put_otm(void)
 /*-------------------------------------------------------
  * Deep ITM Put Test (Early Exercise Likely)
  *-------------------------------------------------------*/
-
-void test_american_put_deep_itm(void)
+static void test_american_put_deep_itm(void)
 {
     mco_ctx *ctx = mco_ctx_new();
     TEST_ASSERT_NOT_NULL(ctx);
@@ -172,8 +165,7 @@ void test_american_put_deep_itm(void)
 /*-------------------------------------------------------
  * Convergence Tests
  *-------------------------------------------------------*/
-
-void test_american_put_convergence(void)
+static void test_american_put_convergence(void)
 {
     mco_ctx *ctx = mco_ctx_new();
     TEST_ASSERT_NOT_NULL(ctx);
@@ -198,8 +190,7 @@ void test_american_put_convergence(void)
 /*-------------------------------------------------------
  * Steps Sensitivity Test
  *-------------------------------------------------------*/
-
-void test_american_put_steps_sensitivity(void)
+static void test_american_put_steps_sensitivity(void)
 {
     mco_ctx *ctx = mco_ctx_new();
     TEST_ASSERT_NOT_NULL(ctx);
@@ -223,8 +214,7 @@ void test_american_put_steps_sensitivity(void)
 /*-------------------------------------------------------
  * Reproducibility Tests
  *-------------------------------------------------------*/
-
-void test_american_reproducible(void)
+static void test_american_reproducible(void)
 {
     mco_ctx *ctx1 = mco_ctx_new();
     mco_ctx *ctx2 = mco_ctx_new();
@@ -247,8 +237,7 @@ void test_american_reproducible(void)
 /*-------------------------------------------------------
  * Edge Cases
  *-------------------------------------------------------*/
-
-void test_american_zero_time(void)
+static void test_american_zero_time(void)
 {
     mco_ctx *ctx = mco_ctx_new();
 
@@ -261,7 +250,7 @@ void test_american_zero_time(void)
     mco_ctx_free(ctx);
 }
 
-void test_american_default_steps(void)
+static void test_american_default_steps(void)
 {
     mco_ctx *ctx = mco_ctx_new();
     mco_set_simulations(ctx, 20000);
@@ -279,7 +268,6 @@ void test_american_default_steps(void)
 /*-------------------------------------------------------
  * Test Runner
  *-------------------------------------------------------*/
-
 int main(void)
 {
     UnityBegin("test_american.c");

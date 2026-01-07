@@ -8,7 +8,6 @@
  *   - Volatility smile shape
  *   - Parameter sensitivity
  */
-
 #include "unity/unity.h"
 #include "mcoptions.h"
 #include "internal/models/sabr.h"
@@ -29,8 +28,7 @@
 /*-------------------------------------------------------
  * Hagan Implied Vol Tests
  *-------------------------------------------------------*/
-
-void test_sabr_atm_vol(void)
+static void test_sabr_atm_vol(void)
 {
     /* ATM implied vol should be close to alpha for short expiry */
     double atm_vol = mco_sabr_atm_vol(100.0, 0.25, TEST_ALPHA, TEST_BETA, TEST_RHO, TEST_NU);
@@ -40,7 +38,7 @@ void test_sabr_atm_vol(void)
     TEST_ASSERT_TRUE(atm_vol < 0.30);
 }
 
-void test_sabr_implied_vol_smile(void)
+static void test_sabr_implied_vol_smile(void)
 {
     double forward = 100.0;
     double time = 1.0;
@@ -59,7 +57,7 @@ void test_sabr_implied_vol_smile(void)
     TEST_ASSERT_TRUE(vol_80 > vol_100);  /* Downside vol higher */
 }
 
-void test_sabr_implied_vol_symmetry(void)
+static void test_sabr_implied_vol_symmetry(void)
 {
     /* With rho = 0 and beta = 1, smile should be roughly symmetric */
     double forward = 100.0;
@@ -79,8 +77,7 @@ void test_sabr_implied_vol_symmetry(void)
 /*-------------------------------------------------------
  * SABR MC Pricing Tests
  *-------------------------------------------------------*/
-
-void test_sabr_european_call_atm(void)
+static void test_sabr_european_call_atm(void)
 {
     mco_ctx *ctx = mco_ctx_new();
     TEST_ASSERT_NOT_NULL(ctx);
@@ -99,7 +96,7 @@ void test_sabr_european_call_atm(void)
     mco_ctx_free(ctx);
 }
 
-void test_sabr_european_put_atm(void)
+static void test_sabr_european_put_atm(void)
 {
     mco_ctx *ctx = mco_ctx_new();
     TEST_ASSERT_NOT_NULL(ctx);
@@ -117,7 +114,7 @@ void test_sabr_european_put_atm(void)
     mco_ctx_free(ctx);
 }
 
-void test_sabr_mc_vs_hagan(void)
+static void test_sabr_mc_vs_hagan(void)
 {
     mco_ctx *ctx = mco_ctx_new();
     TEST_ASSERT_NOT_NULL(ctx);
@@ -132,7 +129,7 @@ void test_sabr_mc_vs_hagan(void)
     double time = 1.0;
 
     /* Get SABR implied vol */
-    double sabr_vol = mco_sabr_implied_vol(forward, strike, time, 
+    double sabr_vol = mco_sabr_implied_vol(forward, strike, time,
                                             TEST_ALPHA, TEST_BETA, TEST_RHO, TEST_NU);
 
     /* Price with Black-Scholes using SABR implied vol */
@@ -151,8 +148,7 @@ void test_sabr_mc_vs_hagan(void)
 /*-------------------------------------------------------
  * Parameter Sensitivity Tests
  *-------------------------------------------------------*/
-
-void test_sabr_alpha_sensitivity(void)
+static void test_sabr_alpha_sensitivity(void)
 {
     mco_ctx *ctx = mco_ctx_new();
     mco_set_simulations(ctx, 30000);
@@ -172,7 +168,7 @@ void test_sabr_alpha_sensitivity(void)
     mco_ctx_free(ctx);
 }
 
-void test_sabr_nu_sensitivity(void)
+static void test_sabr_nu_sensitivity(void)
 {
     mco_ctx *ctx = mco_ctx_new();
     mco_set_simulations(ctx, 30000);
@@ -195,8 +191,7 @@ void test_sabr_nu_sensitivity(void)
 /*-------------------------------------------------------
  * Reproducibility
  *-------------------------------------------------------*/
-
-void test_sabr_reproducible(void)
+static void test_sabr_reproducible(void)
 {
     mco_ctx *ctx1 = mco_ctx_new();
     mco_ctx *ctx2 = mco_ctx_new();
@@ -222,7 +217,6 @@ void test_sabr_reproducible(void)
 /*-------------------------------------------------------
  * Test Runner
  *-------------------------------------------------------*/
-
 int main(void)
 {
     UnityBegin("test_sabr.c");

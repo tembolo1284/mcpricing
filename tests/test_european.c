@@ -8,7 +8,6 @@
  *   - Multi-threading produces correct results
  *   - Put-call parity holds
  */
-
 #include "unity/unity.h"
 #include "mcoptions.h"
 #include "internal/models/gbm.h"
@@ -21,24 +20,19 @@
 /*-------------------------------------------------------
  * Helper: Black-Scholes reference prices
  *-------------------------------------------------------*/
-
 /* ATM call: S=100, K=100, r=5%, σ=20%, T=1 → BS ≈ $10.45 */
 #define ATM_CALL_BS 10.4506
-
 /* ATM put: via put-call parity → BS ≈ $5.57 */
 #define ATM_PUT_BS 5.5735
-
 /* ITM call: S=100, K=90 → BS ≈ $16.70 */
 #define ITM_CALL_BS 16.6994
-
 /* OTM call: S=100, K=110 → BS ≈ $6.04 */
 #define OTM_CALL_BS 6.0401
 
 /*-------------------------------------------------------
  * Basic Pricing Tests
  *-------------------------------------------------------*/
-
-void test_european_call_atm(void)
+static void test_european_call_atm(void)
 {
     mco_ctx *ctx = mco_ctx_new();
     TEST_ASSERT_NOT_NULL(ctx);
@@ -47,13 +41,12 @@ void test_european_call_atm(void)
     mco_set_seed(ctx, 42);
 
     double price = mco_european_call(ctx, 100.0, 100.0, 0.05, 0.20, 1.0);
-
     TEST_ASSERT_DOUBLE_WITHIN(MC_TOLERANCE, ATM_CALL_BS, price);
 
     mco_ctx_free(ctx);
 }
 
-void test_european_put_atm(void)
+static void test_european_put_atm(void)
 {
     mco_ctx *ctx = mco_ctx_new();
     TEST_ASSERT_NOT_NULL(ctx);
@@ -62,13 +55,12 @@ void test_european_put_atm(void)
     mco_set_seed(ctx, 42);
 
     double price = mco_european_put(ctx, 100.0, 100.0, 0.05, 0.20, 1.0);
-
     TEST_ASSERT_DOUBLE_WITHIN(MC_TOLERANCE, ATM_PUT_BS, price);
 
     mco_ctx_free(ctx);
 }
 
-void test_european_call_itm(void)
+static void test_european_call_itm(void)
 {
     mco_ctx *ctx = mco_ctx_new();
     TEST_ASSERT_NOT_NULL(ctx);
@@ -77,13 +69,12 @@ void test_european_call_itm(void)
     mco_set_seed(ctx, 42);
 
     double price = mco_european_call(ctx, 100.0, 90.0, 0.05, 0.20, 1.0);
-
     TEST_ASSERT_DOUBLE_WITHIN(MC_TOLERANCE, ITM_CALL_BS, price);
 
     mco_ctx_free(ctx);
 }
 
-void test_european_call_otm(void)
+static void test_european_call_otm(void)
 {
     mco_ctx *ctx = mco_ctx_new();
     TEST_ASSERT_NOT_NULL(ctx);
@@ -92,7 +83,6 @@ void test_european_call_otm(void)
     mco_set_seed(ctx, 42);
 
     double price = mco_european_call(ctx, 100.0, 110.0, 0.05, 0.20, 1.0);
-
     TEST_ASSERT_DOUBLE_WITHIN(MC_TOLERANCE, OTM_CALL_BS, price);
 
     mco_ctx_free(ctx);
@@ -101,8 +91,7 @@ void test_european_call_otm(void)
 /*-------------------------------------------------------
  * Antithetic Variates Tests
  *-------------------------------------------------------*/
-
-void test_european_call_antithetic(void)
+static void test_european_call_antithetic(void)
 {
     mco_ctx *ctx = mco_ctx_new();
     TEST_ASSERT_NOT_NULL(ctx);
@@ -112,14 +101,13 @@ void test_european_call_antithetic(void)
     mco_set_antithetic(ctx, 1);
 
     double price = mco_european_call(ctx, 100.0, 100.0, 0.05, 0.20, 1.0);
-
     /* Antithetic should give tighter convergence */
     TEST_ASSERT_DOUBLE_WITHIN(MC_TOLERANCE_TIGHT, ATM_CALL_BS, price);
 
     mco_ctx_free(ctx);
 }
 
-void test_european_put_antithetic(void)
+static void test_european_put_antithetic(void)
 {
     mco_ctx *ctx = mco_ctx_new();
     TEST_ASSERT_NOT_NULL(ctx);
@@ -129,7 +117,6 @@ void test_european_put_antithetic(void)
     mco_set_antithetic(ctx, 1);
 
     double price = mco_european_put(ctx, 100.0, 100.0, 0.05, 0.20, 1.0);
-
     TEST_ASSERT_DOUBLE_WITHIN(MC_TOLERANCE_TIGHT, ATM_PUT_BS, price);
 
     mco_ctx_free(ctx);
@@ -138,8 +125,7 @@ void test_european_put_antithetic(void)
 /*-------------------------------------------------------
  * Multi-Threading Tests
  *-------------------------------------------------------*/
-
-void test_european_call_multithreaded(void)
+static void test_european_call_multithreaded(void)
 {
     mco_ctx *ctx = mco_ctx_new();
     TEST_ASSERT_NOT_NULL(ctx);
@@ -149,13 +135,12 @@ void test_european_call_multithreaded(void)
     mco_set_threads(ctx, 4);
 
     double price = mco_european_call(ctx, 100.0, 100.0, 0.05, 0.20, 1.0);
-
     TEST_ASSERT_DOUBLE_WITHIN(MC_TOLERANCE, ATM_CALL_BS, price);
 
     mco_ctx_free(ctx);
 }
 
-void test_european_call_multithreaded_antithetic(void)
+static void test_european_call_multithreaded_antithetic(void)
 {
     mco_ctx *ctx = mco_ctx_new();
     TEST_ASSERT_NOT_NULL(ctx);
@@ -166,7 +151,6 @@ void test_european_call_multithreaded_antithetic(void)
     mco_set_antithetic(ctx, 1);
 
     double price = mco_european_call(ctx, 100.0, 100.0, 0.05, 0.20, 1.0);
-
     TEST_ASSERT_DOUBLE_WITHIN(MC_TOLERANCE_TIGHT, ATM_CALL_BS, price);
 
     mco_ctx_free(ctx);
@@ -175,8 +159,7 @@ void test_european_call_multithreaded_antithetic(void)
 /*-------------------------------------------------------
  * Reproducibility Tests
  *-------------------------------------------------------*/
-
-void test_european_reproducible_single_thread(void)
+static void test_european_reproducible_single_thread(void)
 {
     mco_ctx *ctx1 = mco_ctx_new();
     mco_ctx *ctx2 = mco_ctx_new();
@@ -196,7 +179,7 @@ void test_european_reproducible_single_thread(void)
     mco_ctx_free(ctx2);
 }
 
-void test_european_reproducible_multithreaded(void)
+static void test_european_reproducible_multithreaded(void)
 {
     mco_ctx *ctx1 = mco_ctx_new();
     mco_ctx *ctx2 = mco_ctx_new();
@@ -221,8 +204,7 @@ void test_european_reproducible_multithreaded(void)
 /*-------------------------------------------------------
  * Put-Call Parity Tests
  *-------------------------------------------------------*/
-
-void test_put_call_parity(void)
+static void test_put_call_parity(void)
 {
     mco_ctx *ctx = mco_ctx_new();
     TEST_ASSERT_NOT_NULL(ctx);
@@ -237,7 +219,7 @@ void test_put_call_parity(void)
     double T = 1.0;
 
     double call = mco_european_call(ctx, S, K, r, 0.20, T);
-    
+
     /* Reset RNG for put */
     mco_set_seed(ctx, 42);
     double put = mco_european_put(ctx, S, K, r, 0.20, T);
@@ -254,14 +236,13 @@ void test_put_call_parity(void)
 /*-------------------------------------------------------
  * Black-Scholes Analytical Tests
  *-------------------------------------------------------*/
-
-void test_black_scholes_call(void)
+static void test_black_scholes_call(void)
 {
     double price = mco_black_scholes_call(100.0, 100.0, 0.05, 0.20, 1.0);
     TEST_ASSERT_DOUBLE_WITHIN(0.001, ATM_CALL_BS, price);
 }
 
-void test_black_scholes_put(void)
+static void test_black_scholes_put(void)
 {
     double price = mco_black_scholes_put(100.0, 100.0, 0.05, 0.20, 1.0);
     TEST_ASSERT_DOUBLE_WITHIN(0.001, ATM_PUT_BS, price);
@@ -270,38 +251,36 @@ void test_black_scholes_put(void)
 /*-------------------------------------------------------
  * Edge Cases
  *-------------------------------------------------------*/
-
-void test_european_zero_volatility(void)
+static void test_european_zero_volatility(void)
 {
     mco_ctx *ctx = mco_ctx_new();
-    
+
     /* Zero vol call: max(S - K*e^(-rT), 0) */
     double price = mco_european_call(ctx, 100.0, 90.0, 0.05, 0.0, 1.0);
     double expected = 100.0 - 90.0 * exp(-0.05);
-    
+
     TEST_ASSERT_DOUBLE_WITHIN(0.01, expected, price);
-    
+
     mco_ctx_free(ctx);
 }
 
-void test_european_zero_time(void)
+static void test_european_zero_time(void)
 {
     mco_ctx *ctx = mco_ctx_new();
-    
+
     /* Zero time = immediate exercise */
     double call = mco_european_call(ctx, 100.0, 90.0, 0.05, 0.20, 0.0);
     double put = mco_european_put(ctx, 100.0, 110.0, 0.05, 0.20, 0.0);
-    
+
     TEST_ASSERT_DOUBLE_WITHIN(0.01, 10.0, call);  /* max(100-90, 0) */
     TEST_ASSERT_DOUBLE_WITHIN(0.01, 10.0, put);   /* max(110-100, 0) */
-    
+
     mco_ctx_free(ctx);
 }
 
 /*-------------------------------------------------------
  * Test Runner
  *-------------------------------------------------------*/
-
 int main(void)
 {
     UnityBegin("test_european.c");

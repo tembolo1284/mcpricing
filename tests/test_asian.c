@@ -7,7 +7,6 @@
  *   - Geometric Asian matches closed-form
  *   - Convergence with observations
  */
-
 #include "unity/unity.h"
 #include "mcoptions.h"
 #include "internal/instruments/asian.h"
@@ -18,8 +17,7 @@
 /*-------------------------------------------------------
  * Basic Pricing Tests
  *-------------------------------------------------------*/
-
-void test_asian_call_atm(void)
+static void test_asian_call_atm(void)
 {
     mco_ctx *ctx = mco_ctx_new();
     TEST_ASSERT_NOT_NULL(ctx);
@@ -36,7 +34,7 @@ void test_asian_call_atm(void)
     mco_ctx_free(ctx);
 }
 
-void test_asian_put_atm(void)
+static void test_asian_put_atm(void)
 {
     mco_ctx *ctx = mco_ctx_new();
     TEST_ASSERT_NOT_NULL(ctx);
@@ -56,8 +54,7 @@ void test_asian_put_atm(void)
 /*-------------------------------------------------------
  * Asian vs European Tests
  *-------------------------------------------------------*/
-
-void test_asian_less_than_european(void)
+static void test_asian_less_than_european(void)
 {
     mco_ctx *ctx = mco_ctx_new();
     TEST_ASSERT_NOT_NULL(ctx);
@@ -79,8 +76,7 @@ void test_asian_less_than_european(void)
 /*-------------------------------------------------------
  * Geometric Asian Tests
  *-------------------------------------------------------*/
-
-void test_asian_geometric_call(void)
+static void test_asian_geometric_call(void)
 {
     mco_ctx *ctx = mco_ctx_new();
     TEST_ASSERT_NOT_NULL(ctx);
@@ -98,7 +94,7 @@ void test_asian_geometric_call(void)
     mco_ctx_free(ctx);
 }
 
-void test_asian_geometric_put(void)
+static void test_asian_geometric_put(void)
 {
     mco_ctx *ctx = mco_ctx_new();
     TEST_ASSERT_NOT_NULL(ctx);
@@ -119,8 +115,7 @@ void test_asian_geometric_put(void)
 /*-------------------------------------------------------
  * Observation Count Tests
  *-------------------------------------------------------*/
-
-void test_asian_more_observations(void)
+static void test_asian_more_observations(void)
 {
     mco_ctx *ctx = mco_ctx_new();
     TEST_ASSERT_NOT_NULL(ctx);
@@ -147,8 +142,7 @@ void test_asian_more_observations(void)
 /*-------------------------------------------------------
  * Reproducibility
  *-------------------------------------------------------*/
-
-void test_asian_reproducible(void)
+static void test_asian_reproducible(void)
 {
     mco_ctx *ctx1 = mco_ctx_new();
     mco_ctx *ctx2 = mco_ctx_new();
@@ -170,7 +164,6 @@ void test_asian_reproducible(void)
 /*-------------------------------------------------------
  * Test Runner
  *-------------------------------------------------------*/
-
 int main(void)
 {
     UnityBegin("test_asian.c");

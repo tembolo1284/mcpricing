@@ -8,7 +8,6 @@
  *   - Normal distribution has correct mean/variance
  *   - Jump produces independent streams
  */
-
 #include "unity/unity.h"
 #include "internal/rng.h"
 #include <math.h>
@@ -16,11 +15,9 @@
 /*-------------------------------------------------------
  * Determinism Tests
  *-------------------------------------------------------*/
-
-void test_rng_deterministic_seed(void)
+static void test_rng_deterministic_seed(void)
 {
     mco_rng rng1, rng2;
-
     mco_rng_seed(&rng1, 12345);
     mco_rng_seed(&rng2, 12345);
 
@@ -30,10 +27,9 @@ void test_rng_deterministic_seed(void)
     }
 }
 
-void test_rng_different_seeds(void)
+static void test_rng_different_seeds(void)
 {
     mco_rng rng1, rng2;
-
     mco_rng_seed(&rng1, 12345);
     mco_rng_seed(&rng2, 54321);
 
@@ -44,7 +40,6 @@ void test_rng_different_seeds(void)
             same_count++;
         }
     }
-
     /* Extremely unlikely to have any matches */
     TEST_ASSERT_EQUAL_INT(0, same_count);
 }
@@ -52,8 +47,7 @@ void test_rng_different_seeds(void)
 /*-------------------------------------------------------
  * Uniform Distribution Tests
  *-------------------------------------------------------*/
-
-void test_rng_uniform_range(void)
+static void test_rng_uniform_range(void)
 {
     mco_rng rng;
     mco_rng_seed(&rng, 42);
@@ -66,7 +60,7 @@ void test_rng_uniform_range(void)
     }
 }
 
-void test_rng_uniform_mean(void)
+static void test_rng_uniform_mean(void)
 {
     mco_rng rng;
     mco_rng_seed(&rng, 42);
@@ -74,11 +68,9 @@ void test_rng_uniform_mean(void)
     /* Mean should be ~0.5 */
     double sum = 0.0;
     int n = 100000;
-
     for (int i = 0; i < n; i++) {
         sum += mco_rng_uniform(&rng);
     }
-
     double mean = sum / n;
     TEST_ASSERT_DOUBLE_WITHIN(0.01, 0.5, mean);
 }
@@ -86,8 +78,7 @@ void test_rng_uniform_mean(void)
 /*-------------------------------------------------------
  * Normal Distribution Tests
  *-------------------------------------------------------*/
-
-void test_rng_normal_mean(void)
+static void test_rng_normal_mean(void)
 {
     mco_rng rng;
     mco_rng_seed(&rng, 42);
@@ -95,16 +86,14 @@ void test_rng_normal_mean(void)
     /* Mean should be ~0 */
     double sum = 0.0;
     int n = 100000;
-
     for (int i = 0; i < n; i++) {
         sum += mco_rng_normal(&rng);
     }
-
     double mean = sum / n;
     TEST_ASSERT_DOUBLE_WITHIN(0.02, 0.0, mean);
 }
 
-void test_rng_normal_variance(void)
+static void test_rng_normal_variance(void)
 {
     mco_rng rng;
     mco_rng_seed(&rng, 42);
@@ -113,28 +102,24 @@ void test_rng_normal_variance(void)
     double sum = 0.0;
     double sum_sq = 0.0;
     int n = 100000;
-
     for (int i = 0; i < n; i++) {
         double z = mco_rng_normal(&rng);
         sum += z;
         sum_sq += z * z;
     }
-
     double mean = sum / n;
     double variance = (sum_sq / n) - (mean * mean);
-
     TEST_ASSERT_DOUBLE_WITHIN(0.02, 1.0, variance);
 }
 
 /*-------------------------------------------------------
  * Jump Tests
  *-------------------------------------------------------*/
-
-void test_rng_jump_different_streams(void)
+static void test_rng_jump_different_streams(void)
 {
     mco_rng base, rng1, rng2;
-
     mco_rng_seed(&base, 42);
+
     rng1 = base;
     rng2 = base;
     mco_rng_jump(&rng2);
@@ -146,11 +131,10 @@ void test_rng_jump_different_streams(void)
             same_count++;
         }
     }
-
     TEST_ASSERT_EQUAL_INT(0, same_count);
 }
 
-void test_rng_jump_reproducible(void)
+static void test_rng_jump_reproducible(void)
 {
     mco_rng base1, base2, rng1, rng2;
 
@@ -174,7 +158,6 @@ void test_rng_jump_reproducible(void)
 /*-------------------------------------------------------
  * Test Runner
  *-------------------------------------------------------*/
-
 int main(void)
 {
     UnityBegin("test_rng.c");

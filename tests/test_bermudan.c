@@ -7,7 +7,6 @@
  *   - More exercise dates = higher price
  *   - Convergence to American as dates increase
  */
-
 #include "unity/unity.h"
 #include "mcoptions.h"
 #include <math.h>
@@ -17,8 +16,7 @@
 /*-------------------------------------------------------
  * Basic Pricing Tests
  *-------------------------------------------------------*/
-
-void test_bermudan_put_atm(void)
+static void test_bermudan_put_atm(void)
 {
     mco_ctx *ctx = mco_ctx_new();
     TEST_ASSERT_NOT_NULL(ctx);
@@ -36,7 +34,7 @@ void test_bermudan_put_atm(void)
     mco_ctx_free(ctx);
 }
 
-void test_bermudan_call_atm(void)
+static void test_bermudan_call_atm(void)
 {
     mco_ctx *ctx = mco_ctx_new();
     TEST_ASSERT_NOT_NULL(ctx);
@@ -55,8 +53,7 @@ void test_bermudan_call_atm(void)
 /*-------------------------------------------------------
  * Value Ordering Tests
  *-------------------------------------------------------*/
-
-void test_bermudan_between_european_american(void)
+static void test_bermudan_between_european_american(void)
 {
     mco_ctx *ctx = mco_ctx_new();
     TEST_ASSERT_NOT_NULL(ctx);
@@ -82,8 +79,7 @@ void test_bermudan_between_european_american(void)
 /*-------------------------------------------------------
  * Exercise Frequency Tests
  *-------------------------------------------------------*/
-
-void test_bermudan_more_exercise_dates(void)
+static void test_bermudan_more_exercise_dates(void)
 {
     mco_ctx *ctx = mco_ctx_new();
     TEST_ASSERT_NOT_NULL(ctx);
@@ -104,7 +100,7 @@ void test_bermudan_more_exercise_dates(void)
     mco_ctx_free(ctx);
 }
 
-void test_bermudan_converges_to_american(void)
+static void test_bermudan_converges_to_american(void)
 {
     mco_ctx *ctx = mco_ctx_new();
     TEST_ASSERT_NOT_NULL(ctx);
@@ -127,8 +123,7 @@ void test_bermudan_converges_to_american(void)
 /*-------------------------------------------------------
  * ITM/OTM Tests
  *-------------------------------------------------------*/
-
-void test_bermudan_put_itm(void)
+static void test_bermudan_put_itm(void)
 {
     mco_ctx *ctx = mco_ctx_new();
     TEST_ASSERT_NOT_NULL(ctx);
@@ -149,8 +144,7 @@ void test_bermudan_put_itm(void)
 /*-------------------------------------------------------
  * Reproducibility
  *-------------------------------------------------------*/
-
-void test_bermudan_reproducible(void)
+static void test_bermudan_reproducible(void)
 {
     mco_ctx *ctx1 = mco_ctx_new();
     mco_ctx *ctx2 = mco_ctx_new();
@@ -172,7 +166,6 @@ void test_bermudan_reproducible(void)
 /*-------------------------------------------------------
  * Test Runner
  *-------------------------------------------------------*/
-
 int main(void)
 {
     UnityBegin("test_bermudan.c");

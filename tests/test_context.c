@@ -8,22 +8,20 @@
  *   - Getters and setters
  *   - Error handling
  */
-
 #include "unity/unity.h"
 #include "mcoptions.h"
 
 /*-------------------------------------------------------
  * Lifecycle Tests
  *-------------------------------------------------------*/
-
-void test_context_new_not_null(void)
+static void test_context_new_not_null(void)
 {
     mco_ctx *ctx = mco_ctx_new();
     TEST_ASSERT_NOT_NULL(ctx);
     mco_ctx_free(ctx);
 }
 
-void test_context_free_null_safe(void)
+static void test_context_free_null_safe(void)
 {
     /* Should not crash */
     mco_ctx_free(NULL);
@@ -33,29 +31,28 @@ void test_context_free_null_safe(void)
 /*-------------------------------------------------------
  * Default Values
  *-------------------------------------------------------*/
-
-void test_context_default_simulations(void)
+static void test_context_default_simulations(void)
 {
     mco_ctx *ctx = mco_ctx_new();
     TEST_ASSERT_EQUAL_UINT64(100000, mco_get_simulations(ctx));
     mco_ctx_free(ctx);
 }
 
-void test_context_default_steps(void)
+static void test_context_default_steps(void)
 {
     mco_ctx *ctx = mco_ctx_new();
     TEST_ASSERT_EQUAL_UINT64(252, mco_get_steps(ctx));
     mco_ctx_free(ctx);
 }
 
-void test_context_default_threads(void)
+static void test_context_default_threads(void)
 {
     mco_ctx *ctx = mco_ctx_new();
     TEST_ASSERT_EQUAL_UINT(1, mco_get_threads(ctx));
     mco_ctx_free(ctx);
 }
 
-void test_context_default_antithetic(void)
+static void test_context_default_antithetic(void)
 {
     mco_ctx *ctx = mco_ctx_new();
     TEST_ASSERT_EQUAL_INT(0, mco_get_antithetic(ctx));
@@ -65,8 +62,7 @@ void test_context_default_antithetic(void)
 /*-------------------------------------------------------
  * Setter/Getter Tests
  *-------------------------------------------------------*/
-
-void test_context_set_simulations(void)
+static void test_context_set_simulations(void)
 {
     mco_ctx *ctx = mco_ctx_new();
 
@@ -79,7 +75,7 @@ void test_context_set_simulations(void)
     mco_ctx_free(ctx);
 }
 
-void test_context_set_steps(void)
+static void test_context_set_steps(void)
 {
     mco_ctx *ctx = mco_ctx_new();
 
@@ -92,7 +88,7 @@ void test_context_set_steps(void)
     mco_ctx_free(ctx);
 }
 
-void test_context_set_threads(void)
+static void test_context_set_threads(void)
 {
     mco_ctx *ctx = mco_ctx_new();
 
@@ -105,17 +101,15 @@ void test_context_set_threads(void)
     mco_ctx_free(ctx);
 }
 
-void test_context_set_threads_zero_becomes_one(void)
+static void test_context_set_threads_zero_becomes_one(void)
 {
     mco_ctx *ctx = mco_ctx_new();
-
     mco_set_threads(ctx, 0);
     TEST_ASSERT_EQUAL_UINT(1, mco_get_threads(ctx));
-
     mco_ctx_free(ctx);
 }
 
-void test_context_set_seed(void)
+static void test_context_set_seed(void)
 {
     mco_ctx *ctx = mco_ctx_new();
 
@@ -128,7 +122,7 @@ void test_context_set_seed(void)
     mco_ctx_free(ctx);
 }
 
-void test_context_set_antithetic(void)
+static void test_context_set_antithetic(void)
 {
     mco_ctx *ctx = mco_ctx_new();
 
@@ -148,8 +142,7 @@ void test_context_set_antithetic(void)
 /*-------------------------------------------------------
  * Null Safety Tests
  *-------------------------------------------------------*/
-
-void test_context_getters_null_safe(void)
+static void test_context_getters_null_safe(void)
 {
     TEST_ASSERT_EQUAL_UINT64(0, mco_get_simulations(NULL));
     TEST_ASSERT_EQUAL_UINT64(0, mco_get_steps(NULL));
@@ -158,7 +151,7 @@ void test_context_getters_null_safe(void)
     TEST_ASSERT_EQUAL_INT(0, mco_get_antithetic(NULL));
 }
 
-void test_context_setters_null_safe(void)
+static void test_context_setters_null_safe(void)
 {
     /* Should not crash */
     mco_set_simulations(NULL, 100);
@@ -172,15 +165,14 @@ void test_context_setters_null_safe(void)
 /*-------------------------------------------------------
  * Error Handling Tests
  *-------------------------------------------------------*/
-
-void test_context_error_default(void)
+static void test_context_error_default(void)
 {
     mco_ctx *ctx = mco_ctx_new();
     TEST_ASSERT_EQUAL_INT(MCO_OK, mco_ctx_last_error(ctx));
     mco_ctx_free(ctx);
 }
 
-void test_error_string(void)
+static void test_error_string(void)
 {
     TEST_ASSERT_EQUAL_STRING("Success", mco_error_string(MCO_OK));
     TEST_ASSERT_EQUAL_STRING("Out of memory", mco_error_string(MCO_ERR_NOMEM));
@@ -191,23 +183,21 @@ void test_error_string(void)
 /*-------------------------------------------------------
  * Version Tests
  *-------------------------------------------------------*/
-
-void test_version_number(void)
+static void test_version_number(void)
 {
     uint32_t version = mco_version();
-
     /* Version 2.0.0 = (2 << 16) | (0 << 8) | 0 = 0x020000 */
     TEST_ASSERT_EQUAL_HEX(0x020000, version);
 }
 
-void test_version_string(void)
+static void test_version_string(void)
 {
     const char *version = mco_version_string();
     TEST_ASSERT_NOT_NULL(version);
     TEST_ASSERT_EQUAL_STRING("mcoptions 2.0.0", version);
 }
 
-void test_version_compatible(void)
+static void test_version_compatible(void)
 {
     TEST_ASSERT_EQUAL_INT(1, mco_is_compatible());
 }
@@ -215,7 +205,6 @@ void test_version_compatible(void)
 /*-------------------------------------------------------
  * Test Runner
  *-------------------------------------------------------*/
-
 int main(void)
 {
     UnityBegin("test_context.c");
