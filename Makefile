@@ -15,46 +15,36 @@
 #    make help           Show detailed help
 #
 #==============================================================================
-
-.PHONY: all lib shared static test run-tests clean install uninstall help info
-
+.PHONY: all lib shared static test run-tests clean install uninstall help info install-user
 #------------------------------------------------------------------------------
 # Configuration
 #------------------------------------------------------------------------------
-
 CC        ?= gcc
 AR        := ar
 INSTALL   := install
-
 BUILD     ?= release
 PREFIX    ?= /usr/local
 LIBDIR    := $(PREFIX)/lib
 INCDIR    := $(PREFIX)/include
-
 LIB_NAME  := mcoptions
 VERSION   := 2.5.0
-
 #------------------------------------------------------------------------------
 # Directories
 #------------------------------------------------------------------------------
-
 SRC_DIR   := src
 INC_DIR   := include
 TEST_DIR  := tests
 BUILD_DIR := build
 OBJ_DIR   := $(BUILD_DIR)/obj
-
+USER_LIB_DIR := $(HOME)/libraries
 #------------------------------------------------------------------------------
 # Compiler Detection & Flags
 #------------------------------------------------------------------------------
-
 # Detect compiler type
 COMPILER_VERSION := $(shell $(CC) --version 2>&1)
 IS_CLANG := $(findstring clang,$(COMPILER_VERSION))
-
 # Base flags (both compilers)
 CFLAGS_BASE := -std=c11 -fPIC -fvisibility=hidden
-
 # Strict warnings (common to both)
 CFLAGS_WARN := -Wall -Wextra -Wpedantic \
                -Wshadow -Wcast-align -Wcast-qual \
@@ -67,12 +57,10 @@ CFLAGS_WARN := -Wall -Wextra -Wpedantic \
                -Wnull-dereference -Winit-self \
                -Wuninitialized -Wswitch-enum \
                -Wfloat-equal -Wpointer-arith
-
 # GCC-specific warnings
 CFLAGS_GCC := -Wlogical-op -Wduplicated-cond -Wduplicated-branches \
               -Wrestrict -Wjump-misses-init \
               -Wstringop-overflow=4
-
 # Clang-specific warnings
 CFLAGS_CLANG := -Weverything \
                 -Wno-padded -Wno-packed \
@@ -83,7 +71,6 @@ CFLAGS_CLANG := -Weverything \
                 -Wno-switch-default \
                 -Wno-unused-macros \
                 -Wno-implicit-int-float-conversion
-
 # Apply compiler-specific flags
 ifdef IS_CLANG
     CFLAGS_COMPILER := $(CFLAGS_CLANG)
@@ -92,21 +79,17 @@ else
     CFLAGS_COMPILER := $(CFLAGS_GCC)
     COMPILER_NAME := GCC
 endif
-
 # Disabled warnings (code style choices, not bugs)
 CFLAGS_DISABLED := -Wno-unused-function -Wno-unused-parameter -Wno-redundant-decls
-
 # Release vs Debug
 CFLAGS_RELEASE := -O3 -DNDEBUG -march=native -flto
 CFLAGS_DEBUG   := -g3 -O0 -DDEBUG -fno-omit-frame-pointer
-
 # Sanitizers (debug mode)
 ifdef IS_CLANG
     SANITIZERS := -fsanitize=address,undefined,integer
 else
     SANITIZERS := -fsanitize=address,undefined
 endif
-
 ifeq ($(BUILD),debug)
     CFLAGS_BUILD := $(CFLAGS_DEBUG) $(SANITIZERS)
     LDFLAGS_EXTRA := $(SANITIZERS)
@@ -114,23 +97,18 @@ else
     CFLAGS_BUILD := $(CFLAGS_RELEASE)
     LDFLAGS_EXTRA := -flto
 endif
-
 # Combine all flags
 CFLAGS := $(CFLAGS_BASE) $(CFLAGS_WARN) $(CFLAGS_COMPILER) $(CFLAGS_DISABLED) $(CFLAGS_BUILD)
-
 LDFLAGS := -lm -lpthread $(LDFLAGS_EXTRA)
 INCLUDES := -I$(INC_DIR)
-
 #------------------------------------------------------------------------------
 # Sources
 #------------------------------------------------------------------------------
-
 # Core
 SRCS := $(SRC_DIR)/rng.c \
         $(SRC_DIR)/allocator.c \
         $(SRC_DIR)/context.c \
         $(SRC_DIR)/version.c
-
 # Models
 SRCS += $(SRC_DIR)/models/gbm.c \
         $(SRC_DIR)/models/sabr.c \
@@ -138,7 +116,6 @@ SRCS += $(SRC_DIR)/models/gbm.c \
         $(SRC_DIR)/models/black76.c \
         $(SRC_DIR)/models/heston.c \
         $(SRC_DIR)/models/merton_jump.c
-
 # Instruments
 SRCS += $(SRC_DIR)/instruments/european.c \
         $(SRC_DIR)/instruments/american.c \
@@ -147,21 +124,16 @@ SRCS += $(SRC_DIR)/instruments/european.c \
         $(SRC_DIR)/instruments/barrier.c \
         $(SRC_DIR)/instruments/lookback.c \
         $(SRC_DIR)/instruments/digital.c
-
 # Methods
 SRCS += $(SRC_DIR)/methods/thread_pool.c \
         $(SRC_DIR)/methods/lsm.c \
         $(SRC_DIR)/methods/sobol.c
-
 # Variance Reduction
 SRCS += $(SRC_DIR)/variance_reduction/control_variates.c
-
 OBJS := $(patsubst $(SRC_DIR)/%.c,$(OBJ_DIR)/%.o,$(SRCS))
-
 #------------------------------------------------------------------------------
 # Tests
 #------------------------------------------------------------------------------
-
 TEST_SRCS := $(TEST_DIR)/test_rng.c \
              $(TEST_DIR)/test_context.c \
              $(TEST_DIR)/test_european.c \
@@ -176,29 +148,34 @@ TEST_SRCS := $(TEST_DIR)/test_rng.c \
              $(TEST_DIR)/test_barrier.c \
              $(TEST_DIR)/test_lookback.c \
              $(TEST_DIR)/test_digital.c
-
 TEST_BINS := $(patsubst $(TEST_DIR)/%.c,$(BUILD_DIR)/%,$(TEST_SRCS))
 UNITY_OBJ := $(OBJ_DIR)/unity.o
-
 #------------------------------------------------------------------------------
 # Outputs
 #------------------------------------------------------------------------------
-
 LIB_SHARED := $(BUILD_DIR)/lib$(LIB_NAME).so
 LIB_STATIC := $(BUILD_DIR)/lib$(LIB_NAME).a
-
+# User library directory targets (simple names)
+USER_STATIC_LIB := $(USER_LIB_DIR)/lib$(LIB_NAME).a
+USER_SHARED_LIB := $(USER_LIB_DIR)/lib$(LIB_NAME).so
 #------------------------------------------------------------------------------
 # Default Target
 #------------------------------------------------------------------------------
-
-all: lib
-
+all: lib install-user
+	@echo ""
+	@echo "╔════════════════════════════════════════════╗"
+	@echo "║  ✓ Build complete!                         ║"
+	@echo "╚════════════════════════════════════════════╝"
+	@echo "  Static:  $(LIB_STATIC)"
+	@echo "  Shared:  $(LIB_SHARED)"
+	@echo ""
+	@echo "  ✓ Libraries copied to ~/libraries/"
+	@echo "  Static:  $(USER_STATIC_LIB)"
+	@echo "  Shared:  $(USER_SHARED_LIB)"
 #------------------------------------------------------------------------------
 # Library Targets
 #------------------------------------------------------------------------------
-
 lib: $(LIB_SHARED) $(LIB_STATIC)
-
 $(LIB_SHARED): $(OBJS)
 	@echo ""
 	@echo "╔════════════════════════════════════════════╗"
@@ -207,7 +184,6 @@ $(LIB_SHARED): $(OBJS)
 	@mkdir -p $(BUILD_DIR)
 	@$(CC) -shared -Wl,-soname,lib$(LIB_NAME).so -o $@ $^ $(LDFLAGS)
 	@echo "  ✓ Created: $@"
-
 $(LIB_STATIC): $(OBJS)
 	@echo ""
 	@echo "╔════════════════════════════════════════════╗"
@@ -216,42 +192,46 @@ $(LIB_STATIC): $(OBJS)
 	@mkdir -p $(BUILD_DIR)
 	@$(AR) rcs $@ $^
 	@echo "  ✓ Created: $@"
-
+#------------------------------------------------------------------------------
+# Install to User Library Directory
+#------------------------------------------------------------------------------
+install-user: $(LIB_STATIC) $(LIB_SHARED)
+	@mkdir -p $(USER_LIB_DIR)
+	@echo ""
+	@echo "╔════════════════════════════════════════════╗"
+	@echo "║  Copying to ~/libraries/                   ║"
+	@echo "╚════════════════════════════════════════════╝"
+	@cp $(LIB_STATIC) $(USER_STATIC_LIB)
+	@cp $(LIB_SHARED) $(USER_SHARED_LIB)
+	@echo "  ✓ Copied: $(USER_STATIC_LIB)"
+	@echo "  ✓ Copied: $(USER_SHARED_LIB)"
 #------------------------------------------------------------------------------
 # Object Files
 #------------------------------------------------------------------------------
-
 # Create all necessary subdirectories
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
 	@echo "  CC  $<"
 	@mkdir -p $(dir $@)
 	@$(CC) $(CFLAGS) $(INCLUDES) -DMCO_BUILD_SHARED -c $< -o $@
-
 # Ensure build directories exist
 $(OBJS): | $(OBJ_DIR)
-
 $(OBJ_DIR):
 	@mkdir -p $(OBJ_DIR)/models
 	@mkdir -p $(OBJ_DIR)/instruments
 	@mkdir -p $(OBJ_DIR)/methods
 	@mkdir -p $(OBJ_DIR)/variance_reduction
-
 #------------------------------------------------------------------------------
 # Tests
 #------------------------------------------------------------------------------
-
 test: $(TEST_BINS)
-
 $(UNITY_OBJ): $(TEST_DIR)/unity/unity.c
 	@echo "  CC  $<"
 	@mkdir -p $(OBJ_DIR)
 	@$(CC) $(CFLAGS_BASE) -I$(TEST_DIR) -c $< -o $@
-
 $(BUILD_DIR)/test_%: $(TEST_DIR)/test_%.c $(LIB_STATIC) $(UNITY_OBJ)
 	@echo "  CC  $<"
 	@mkdir -p $(BUILD_DIR)
 	@$(CC) $(CFLAGS) $(INCLUDES) -I$(TEST_DIR) $< $(UNITY_OBJ) $(LIB_STATIC) -o $@ $(LDFLAGS)
-
 run-tests: test
 	@echo ""
 	@echo "╔════════════════════════════════════════════════════════════════╗"
@@ -271,11 +251,9 @@ run-tests: test
 		exit 1; \
 	fi; \
 	echo "════════════════════════════════════════════════════════════════════"
-
 #------------------------------------------------------------------------------
 # Installation
 #------------------------------------------------------------------------------
-
 install: lib
 	@echo ""
 	@echo "Installing mcoptions $(VERSION) to $(PREFIX)..."
@@ -288,27 +266,22 @@ install: lib
 	@echo "  ✓ Installed header to $(INCDIR)"
 	@echo ""
 	@echo "Run 'sudo ldconfig' to update the library cache."
-
 uninstall:
 	@echo "Uninstalling mcoptions from $(PREFIX)..."
 	@rm -f $(DESTDIR)$(LIBDIR)/lib$(LIB_NAME).a
 	@rm -f $(DESTDIR)$(LIBDIR)/lib$(LIB_NAME).so
 	@rm -f $(DESTDIR)$(INCDIR)/mcoptions.h
 	@echo "  ✓ Done"
-
 #------------------------------------------------------------------------------
 # Clean
 #------------------------------------------------------------------------------
-
 clean:
 	@echo "Cleaning build artifacts..."
 	@rm -rf $(BUILD_DIR)
 	@echo "  ✓ Removed $(BUILD_DIR)/"
-
 #------------------------------------------------------------------------------
 # Info
 #------------------------------------------------------------------------------
-
 info:
 	@echo ""
 	@echo "mcoptions $(VERSION)"
@@ -319,11 +292,9 @@ info:
 	@echo "  Sources:      $(words $(SRCS)) files"
 	@echo "  Test suites:  $(words $(TEST_SRCS))"
 	@echo ""
-
 #------------------------------------------------------------------------------
 # Help
 #------------------------------------------------------------------------------
-
 help:
 	@echo ""
 	@echo "╔══════════════════════════════════════════════════════════════════╗"
@@ -356,4 +327,6 @@ help:
 	@echo "Output:"
 	@echo "  build/libmcoptions.so   Shared library"
 	@echo "  build/libmcoptions.a    Static library"
+	@echo ""
+	@echo "  Libraries are automatically copied to ~/libraries/"
 	@echo ""
